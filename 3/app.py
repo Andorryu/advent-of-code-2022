@@ -104,3 +104,4 @@ def driver2():
     print(calculate_score(similar_items))
 
 driver2()
+
