@@ -92,5 +92,4 @@ def calculate_points(game: list[tuple[str, str]]):
                 score += outcome_points[outcome]
     return score
 
-
 print(str(calculate_points(read_file(open("input.txt", "r")))))
