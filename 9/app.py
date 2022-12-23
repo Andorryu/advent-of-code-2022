@@ -11,12 +11,28 @@ class Tail:
     def settle(self) -> None:
         if self.head.pos[0] - self.pos[0] == 2: # head is below
             self.pos[0] += 1 # move down
+            if self.head.pos[1] - self.pos[1] == 1: # head is also right
+                self.pos[1] += 1
+            elif self.pos[1] - self.head.pos[1] == 1: # head is also left
+                self.pos[1] -= 1
         elif self.pos[0] - self.head.pos[0] == 2: # head is above
             self.pos[0] -= 1 # move up
+            if self.head.pos[1] - self.pos[1] == 1: # head is also right
+                self.pos[1] += 1
+            elif self.pos[1] - self.head.pos[1] == 1: # head is also left
+                self.pos[1] -= 1
         elif self.head.pos[1] - self.pos[1] == 2: # head is to the right
             self.pos[1] += 1 # move right
+            if self.head.pos[0] - self.pos[0] == 1: # head is also down
+                self.pos[0] += 1
+            elif self.pos[0] - self.head.pos[0] == 1: # head is also up
+                self.pos[0] -= 1
         elif self.pos[1] - self.head.pos[1] == 2: # head is left
             self.pos[1] -= 1 # move left
+            if self.head.pos[0] - self.pos[0] == 1: # head is also down
+                self.pos[0] += 1
+            elif self.pos[0] - self.head.pos[0] == 1: # head is also up
+                self.pos[0] -= 1
         self.poses.add(tuple(self.pos))
 
 class Head:
@@ -38,13 +54,15 @@ class Head:
             self.pos[0] -= 1
         elif dir == "D":
             self.pos[0] += 1
+        #print_frame(self, self.tail)
         # settle the tail and recurse
         self.tail.settle()
         self.move(dir, amount - 1)
 
-def print_state(head, tail, start, num_rows, num_cols):
+def print_state(head, tail, start, num_rows, num_cols): # for debugging
     print(f"H at {head.pos}")
     print(f"T at {tail.pos}")
+    print(f"Visited spots: {len(tail.poses)}")
     for row in range(num_rows):
         for col in range(num_cols):
             if head.pos[0] == row and head.pos[1] == col:
@@ -62,11 +80,10 @@ def print_state(head, tail, start, num_rows, num_cols):
                     print(".", end="")
         print("")
 
-def print_frame(head, tail):
+def print_frame(head, tail): # for debugging
     print("")
-    print_state(head, tail, (4, 0), 5, 6)
-    time.sleep(2)
-
+    print_state(head, tail, (15, 5), 20, 20)
+    time.sleep(.2)
 def driver():
     filelines = open("input.txt").readlines()
 
@@ -75,20 +92,16 @@ def driver():
     for line in filelines:
         filelines[i] = line.removesuffix('\n')
         i += 1
-    
-    start = [4, 0]
+
+    START = [15, 5]
 
     # create objects
-    tail = Tail(start, head := Head(start, None))
+    tail = Tail(START.copy(), head := Head(START.copy(), None))
     head.tail = tail
 
     for com in filelines:
-        head.move(com[0], int(com[2]))
-        # print_frame(head, tail)
-        # print(f"H: {head.pos}")
-        # print(f"T: {tail.pos}")
-    
-    print(tail.poses)
+        head.move(com[0], int(com[2] + com[3:]))
+
     print(len(tail.poses))
 
 driver()
